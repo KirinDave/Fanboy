@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Fanboy.Parser where
+module Fanboy.Parser (message) where
 import qualified Data.Irc as IRC
 import           Data.Irc (Message)
 import qualified Data.Attoparsec.Char8 as P8
@@ -22,6 +22,7 @@ prefix = (P8.char ':' *> getPrefix <* whitespace) <|> return B.empty
 
 command :: Parser B.ByteString
 command = (takeN 3 P8.digit <|> P8.takeWhile (P8.notInClass ": ")) <* whitespace <?> "Bad command"
+          where takeN count repeatedParser = (B.pack <$> replicateM count repeatedParser)
 
 params :: Parser [B.ByteString]
 params = P.many param <?> "Bad Params"
@@ -37,6 +38,3 @@ eol = string "\r\n" *> return () <?> "Fail finding eol."
 
 whitespace :: Parser ()
 whitespace = skipWhile (inClass " ") >> return ()
-
-takeN :: Int -> Parser Char -> Parser B.ByteString
-takeN count parser = B.pack <$> replicateM count parser
