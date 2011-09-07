@@ -22,7 +22,7 @@ prefix = (P8.char ':' *> getPrefix <* whitespace) <|> return B.empty
 
 command :: Parser B.ByteString
 command = (takeN 3 P8.digit <|> P8.takeWhile (P8.notInClass ": ")) <* whitespace <?> "Bad command"
-          where takeN count repeatedParser = (B.pack <$> replicateM count repeatedParser)
+          where takeN count repeatedParser = B.pack <$> replicateM count repeatedParser
 
 params :: Parser [B.ByteString]
 params = P.many param <?> "Bad Params"
